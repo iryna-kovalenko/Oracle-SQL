@@ -1,0 +1,23 @@
+with duplicate as(
+select num from(
+select c num,count(c) ammount from (
+select count(Challenges.challenge_id)c
+from Hackers
+    join Challenges on Hackers.hacker_id= Challenges.hacker_id
+group by Hackers.hacker_id,Hackers.name,3
+order by 1 desc)
+group by c
+order by 1)
+where ammount>1 and num<>(select max(count(Challenges.challenge_id)) c
+from Hackers
+    join Challenges on Hackers.hacker_id= Challenges.hacker_id
+group by Hackers.hacker_id)),
+challaneg_count as(
+select Hackers.hacker_id id,Hackers.name name,count(Challenges.challenge_id)c
+from Hackers
+    join Challenges on Hackers.hacker_id= Challenges.hacker_id
+group by Hackers.hacker_id,Hackers.name,3)
+select * from challaneg_count
+where c not in (select num from duplicate)
+order by c desc,id;
+
