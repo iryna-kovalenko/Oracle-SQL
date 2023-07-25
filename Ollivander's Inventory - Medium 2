@@ -1,0 +1,10 @@
+-- Check (...) for description and link
+select id,age,coins_needed,power
+from Wands w
+join Wands_Property wp on w.code=wp.code
+where (age,power,coins_needed) in (select age,power,min(coins_needed)
+from Wands w
+join Wands_Property wp on w.code=wp.code
+where is_evil=0
+group by age,power)
+order by power desc,age desc;
