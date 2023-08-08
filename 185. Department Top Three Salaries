@@ -1,0 +1,24 @@
+-- OPTION 1 fast and efficient 
+select Department,Employee,Salary from(
+select Department.name Department,Employee.name Employee,Employee.salary Salary,
+dense_rank() over(partition by departmentId order by salary desc) r
+from Employee join Department on Employee.departmentId=Department.id)
+where r<=3;
+
+-- OPTION 2 much slower 
+
+with ss as (
+select  DEPARTMENTID,SALARY,
+        row_number () over (
+         partition by departmentId
+         order by SALARY desc
+       ) rn
+from (select distinct salary,DEPARTMENTID from Employee))
+select 
+  Department.name Department,
+  Employee.name Employee,
+  Employee.salary Salary
+from 
+  Employee inner join Department on   Employee.departmentId=Department.id
+where 
+	(Employee.departmentId,Employee.salary) in (select DEPARTMENTID,SALARY from ss where rn<=3);
