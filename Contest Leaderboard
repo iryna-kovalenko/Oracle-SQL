@@ -1,0 +1,16 @@
+with ss as (
+select s.hacker_id hacker_id,
+       s.challenge_id challenge_id,
+       h.name name,
+       max(s.score) sc
+from Submissions s
+inner join Hackers h on s.hacker_id=h.hacker_id
+group by 
+    s.hacker_id,h.name,s.challenge_id)
+select 
+    hacker_id,name,sum(sc) total_score
+from ss
+having sum(sc)!=0
+group by 
+    hacker_id,name
+order by sum(sc) desc,hacker_id asc;
